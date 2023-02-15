@@ -1,13 +1,14 @@
 import sqlite3
 import sys
-from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QDialog
+from mainwindow import Ui_MainWindow
+from addEditCoffeeForm import Ui_addEditCoffeeForm
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
+        self.setupUi(self)
         self.operation = 'Добавить'
         self.cof_list.verticalHeader().setVisible(False)
         self.refresh_table()
@@ -15,7 +16,7 @@ class MainWindow(QMainWindow):
         self.redact_btn.clicked.connect(self.info_menu)
 
     def refresh_table(self):
-        connection = sqlite3.connect('coffee_inf')
+        connection = sqlite3.connect('data/coffee_inf')
         cursor = connection.cursor()
         res = cursor.execute(f"""
         SELECT *
@@ -39,10 +40,10 @@ class MainWindow(QMainWindow):
             program2.exec()
 
 
-class AddEditCoffeeForm(QDialog):
+class AddEditCoffeeForm(QDialog, Ui_addEditCoffeeForm):
     def __init__(self):
         super().__init__()
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
         if program.operation == 'Редактировать':
             self.title.setText(f'{program.cof_list.item(program.cof_list.currentRow(), 1).text()}')
             self.currect_id = program.cof_list.item(program.cof_list.currentRow(), 0).text()
@@ -56,7 +57,7 @@ class AddEditCoffeeForm(QDialog):
     def add_coffee(self):
         if (self.title.text() and self.roasting.text() and self.type.text()
                 and self.description.text() and self.price.text() and self.size.text()):
-            connection = sqlite3.connect('coffee_inf')
+            connection = sqlite3.connect('data/coffee_inf')
             cursor = connection.cursor()
             if program.operation == 'Добавить':
                 cursor.execute(f"""
